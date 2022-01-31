@@ -1,0 +1,11 @@
+dump 1 2 +
+
+// dump [number1] [number2] [+-]
+// 
+// dump         WRITES TO THE CONSOLE
+//
+// [number1]    PUSHES AN INTEGER TO THE STACK
+// [number2]    PUSHES AN INTEGER TO THE STACK
+//
+// [+-]         + ADD THE 2 NUMBERS TOGETHER
+//              - SUBTRACT THE 2 NUMBERS
