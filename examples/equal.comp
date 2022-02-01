@@ -1,0 +1,11 @@
+push 10
+== 10
+dump
+
+// EXPLANATION
+//
+// push (i)     PUSHES i TO THE TOP OF THE STACK
+//
+// ==   (i)     TAKES THE TOP NUMBER FROM THE STACK AND SEES IF IT IS EQUAL TO i. PUSHES 0 IF IT IS NOT. PUSHES 1 IF IT IS.
+//
+// dump         WRITES TO THE CONSOLE

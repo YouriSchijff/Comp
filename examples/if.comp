@@ -1,0 +1,23 @@
+push 10
+
+if == 10
+
+    push 10
+    plus
+
+end
+
+dump
+
+// EXPLANATION
+//
+// push (i)     PUSHES i TO THE TOP OF THE STACK
+//
+// if   (t) (i) IF t IS ==
+//              THEN IT MEANS WE ARE CHECKING IF i IS EQUAL TO THE NUMBER FROM THE TOP OF THE STACK
+//
+// plus         ADDS THE TOP 2 NUMBERS FROM THE STACK
+//
+// end          THIS MEANS THAT THE STATEMENT WILL END
+//
+// dump         WRITES TO THE CONSOLE

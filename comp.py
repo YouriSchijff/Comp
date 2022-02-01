@@ -22,6 +22,14 @@ swap (pos1) (pos2)
 SWAPS TWO NUMBERS FROM THE STACK
 
 put (pos) (num)
+INSERTS A NUMBER IN THE STACK AT A POSITION
+
+== (num)
+POPS THE TOP NUMBER FROM THE STACK AND SEES IF IT IS EQUAL TO i. PUSHES 0 IF IT IS NOT. PUSHES 1 IF IT IS.
+
+if (tok) (num) 
+IF tok IS ==
+THEN IT MEANS THE PROGRAM IS CHECKING IF num IS EQUAL TO THE NUMBER FROM THE TOP OF THE STACK
 '''
 
 from datetime import datetime
@@ -126,11 +134,6 @@ def compile(program, path):
             out.write("\tstack[x] = i;\n")
             out.write("\tcount++;\n")
             out.write("}\n\n")
-            '''         
-            for(i=size-1;i>=pos-1;i--)
-                student[i+1]=student[i];
-            student[pos-1]= value
-            '''
             
             # Main function
             out.write("int main() {\n")
