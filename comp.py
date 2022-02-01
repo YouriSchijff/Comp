@@ -1,15 +1,32 @@
 # TODO add errors if program fails
 # TODO add () support ## dump 1 ( 2 2 + ) +
-#                             1 + (2 + 2)
+#                     ##      1 + ( 2 + 2 )
 
+'''
+push (num)
+PUSH A NUMBER TO THE TOP OF THE STACK
 
+plus
+ADDS THE TOP 2 NUMBERS FROM THE STACK TOGETHER
+
+minus
+SUBTRACTS THE TOP 2 NUMBERS FROM THE STACK
+
+dump [(num1) (num2) (+-)]
+PRINTS THE NUMBER FROM THE TOP OF THE STACK
+
+clon
+DUPLICATES THE TOP NUMBER FROM THE STACK AND PUTS IT INFRONT
+
+swap (pos1) (pos2)
+SWAPS TWO NUMBERS FROM THE STACK
+
+put (pos) (num)
+'''
+
+from datetime import datetime
 import subprocess
 import sys, os
-
-def usage():
-    print("\nSUBCOMMAND USAGE")
-    print("\n  sim    Simulate program")
-    print("\n  com    Compile program")
 
 counter = 0
 def cc(i = False):
@@ -20,15 +37,17 @@ def cc(i = False):
     counter += 1
     return c
    
-PUSH = cc(True) # (0, x)
+PUSH = cc(True) # (0, i)
 PLUS = cc()     # (1,  )
 MINUS = cc()    # (2,  )
 DUMP = cc()     # (3,  )
-
+CLONE = cc()    # (4,  )
+SWAP = cc()     # [5, x, y]
+PUT = cc()      # [6, x, i]
 OPS = cc()
 
-def push(x):
-    return (PUSH, x)
+def push(i):
+    return (PUSH, i)
 
 def plus():
     return (PLUS, )
@@ -39,6 +58,14 @@ def minus():
 def dump():
     return (DUMP, )
 
+def clone():
+    return (CLONE, )
+
+def swap(x, y):
+    return [SWAP, x, y]
+
+def put(x, i):
+    return [PUT, x, i]
 
 def simulate(program):
     stack = []
@@ -56,6 +83,15 @@ def simulate(program):
         elif op[0] == DUMP:
             a = stack.pop()
             print(a)
+        elif op[0] == CLONE:
+            a = stack.pop()
+            stack.append(a)
+            stack.append(a)
+            pass
+        elif op[0] == SWAP:
+            stack[op[1]], stack[op[2]] = stack[op[2]], stack[op[1]]
+        elif op[0] == PUT:
+            stack.insert(op[1], op[2])
         else:
             print("\n\nERROR :: unknown operation given")
 
@@ -70,8 +106,8 @@ def compile(program, path):
             out.write("char n = 10;\n\n")
             
             # Push function
-            out.write("void push(int x) {\n")
-            out.write("\tstack[count] = x;\n")
+            out.write("void push(int i) {\n")
+            out.write("\tstack[count] = i;\n")
             out.write("\tcount++;\n")
             out.write("}\n\n")
             
@@ -81,6 +117,20 @@ def compile(program, path):
             out.write("\tcount--;\n")
             out.write("\treturn res;\n")
             out.write("}\n\n")
+
+            
+            # Put function
+            out.write("void put(int x, int i) {\n")
+            out.write("\tfor(int index = 255; index >= x; index--)\n")
+            out.write("\t\tstack[index+1] = stack[index];\n")
+            out.write("\tstack[x] = i;\n")
+            out.write("\tcount++;\n")
+            out.write("}\n\n")
+            '''         
+            for(i=size-1;i>=pos-1;i--)
+                student[i+1]=student[i];
+            student[pos-1]= value
+            '''
             
             # Main function
             out.write("int main() {\n")
@@ -112,6 +162,20 @@ def compile(program, path):
                     out.write("\n\t// -- DUMP -- \n")
                     out.write("\ta = pop();\n")
                     out.write('\tprintf("%d%c", a, n);\n')
+                elif op[0] == CLONE:
+                    out.write("\n\t// -- CLONE -- \n")
+                    out.write("\ta = pop();\n")
+                    out.write("\tpush(a);\n")
+                    out.write("\tpush(a);\n")
+                elif op[0] == SWAP:
+                    out.write(f"\n\t// -- SWAP {op[1]} {op[2]} -- \n")
+                    out.write("\ta = stack[%d];\n" % op[1])
+                    out.write("\tb = stack[%d];\n" % op[2])
+                    out.write("\tstack[%d] = b;\n" % op[1])
+                    out.write("\tstack[%d] = a;\n" % op[2])
+                elif op[0] == PUT:
+                    out.write(f"\n\t// -- PUT {op[1]} {op[2]} -- \n")
+                    out.write(f"\tput({op[1]}, {op[2]});\n")
 
             out.write("\n\t//\n")
             out.write("\t// PROGRAM END\n")
@@ -136,7 +200,7 @@ def make_program(file):
                 index = 0
                 break
             elif j == 'push':
-                if col[index] in "0123456789" and col[index-1] == 'push':
+                if int(col[index]) and col[index-1] == 'push':
                     program.append(push(int(col[index])))
             elif j == 'plus':
                 col.append('')
@@ -150,29 +214,52 @@ def make_program(file):
                 col.append('')
                 if col[index-1] == 'dump' and not col[index]:
                     program.append(dump())
-                elif col[index] in "0123456789" and col[index+1] in "0123456789" and col[index+2] in "+-" and col[index-1] == 'dump':
-                    program.append(push(int(col[index])))
-                    program.append(push(int(col[index+1])))
-                    if col[index+2] == '+':
-                        program.append(plus())
-                    if col[index+2] == '-':
-                        program.append(minus())
-                    program.append(dump())
+            elif j == 'clone':
+                col.append('')
+                if col[index-1] == 'clone' and not col[index]:
+                    program.append(clone())
+            elif j == 'swap':
+                col.append('')
+                if col[index-1] == 'swap' and int(col[index+1]):
+                    program.append(swap(int(col[index]), int(col[index+1])))
+            elif j == 'put':
+                col.append('')
+                if col[index-1] == 'put' and int(col[index]) and int(col[index+1]) and not col[index+2]:
+                    program.append(put(int(col[index]), int(col[index+1])))
             index = 0
 
 program = [
-
+    
 ]
 
+def usage():
+    print("\nSUBCOMMAND USAGE")
+    print("\n  sim    Simulates program")
+    print("\n  com    Compiles program")
+    print("\n  mat    Simulates and compiles program")
+
+
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
+    first = datetime.now()
+    if len(sys.argv) == 1:
         usage()
-        print("\n\nERROR :: no file given")
+        print("\n\nERROR :: No subcommand given")
+        exit(0)
+    elif len(sys.argv) == 2:
+        usage()
+        print("\n\nERROR :: No file given")
+        exit(0)
+    elif len(sys.argv) > 3:
+        usage()
+        print("\n\nERROR :: To many arguments given")
         exit(0)
     
     subcmd = sys.argv[1]
 
     file = sys.argv[2]
+    if not file.endswith(".comp"):
+        print("\nERROR :: Wrong type file given")
+        exit(0)
 
     make_program(file)
 
@@ -182,3 +269,14 @@ if __name__ == "__main__":
         compile(program, "compile.c")
         subprocess.call(["gcc", "compile.c", "-o", "compile"])
         subprocess.call(["compile.exe"])
+    elif subcmd == "mat":
+        print("\nSIMULATION")
+        simulate(program)
+        print("\nCOMPILATION")
+        compile(program, "compile.c")
+        subprocess.call(["gcc", "compile.c", "-o", "compile"])
+        subprocess.call(["compile.exe"])
+    else:
+        usage()
+        print("\n\nERROR :: Wrong subcommand given")
+        exit(0)

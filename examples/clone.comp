@@ -1,0 +1,14 @@
+push 10
+
+clone
+
+dump
+dump
+
+// EXPLANATION
+//
+// push (i)     PUSHES i TO THE TOP OF THE STACK
+//
+// clone        DUPLICATES THE TOP NUMBER OF THE STACK
+//
+// dump         WRITES TO THE CONSOLE

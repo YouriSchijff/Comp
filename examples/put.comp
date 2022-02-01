@@ -1,0 +1,16 @@
+push 10
+push 4
+
+put 1 99
+
+dump
+dump
+dump
+
+// EXPLANATION
+//
+// push (i)     PUSHES i TO THE TOP OF THE STACK
+//
+// put  (x) (i) INSERTS i TO THE STACK AT x
+//
+// dump         WRITES TO THE CONSOLE

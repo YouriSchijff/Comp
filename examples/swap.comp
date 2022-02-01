@@ -1,0 +1,21 @@
+push 10
+push 1
+
+dump
+dump
+
+push 10
+push 1
+
+swap 0 1
+
+dump
+dump
+
+// EXPLANATION
+//
+// push (i)     PUSHES i TO THE TOP OF THE STACK
+//
+// swap (x) (y) SWAPS x WITH y IN THE STACK
+//
+// dump         WRITES TO THE CONSOLE

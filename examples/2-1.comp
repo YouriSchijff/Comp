@@ -1,0 +1,15 @@
+push 1
+
+push 2
+
+minius
+
+dump
+
+// EXPLANATION
+//
+// push (i)     PUSHES i TO THE TOP OF THE STACK
+//
+// minus        SUBTRACTS THE TOP 2 NUMBERS FROM THE STACK
+//
+// dump         WRITES TO THE CONSOLE
